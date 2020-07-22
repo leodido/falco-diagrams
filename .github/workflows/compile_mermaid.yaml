@@ -25,18 +25,14 @@ jobs:
       uses: neenjaw/compile-mermaid-markdown-action@master
       with:
         files: ${{ steps.getfile.outputs.files }}
-        output: '.resources'
+        output: 'output'
       env:
         HIDE_CODEBLOCKS: 1
-    - name: status
-      run: |
-        git status
+        ABSOLUTE_IMAGE_LINKS: 1
     - name: commit
       run: |
         git config --local user.email "leodidonato@gmail.com"
         git config --local user.name "Leonardo Di Donato"
-        git commit -m "new: gen diagrams" -a
+        git add -A && git commit -m "new: diagrams"
     - name: push
       uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
