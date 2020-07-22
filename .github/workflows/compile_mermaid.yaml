@@ -1,0 +1,42 @@
+name: 'Compile mermaid'
+
+on:
+  push:
+    paths:
+      - '**/*.mermaid'
+      - '**/*.mmd'
+      - '**/*.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+    - name: file with changes
+      id: getfile
+      run: |
+        echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -e '.*\.md$' -e'.*\.*mmd$' -e '.*\.mermaid$' | xargs)"
+    - name: mermaid files with changes
+      run: |
+        echo ${{ steps.getfile.outputs.files }}
+    - name: compilation
+      uses: neenjaw/compile-mermaid-markdown-action@master
+      with:
+        files: ${{ steps.getfile.outputs.files }}
+        output: '.resources'
+      env:
+        HIDE_CODEBLOCKS: 1
+    - name: status
+      run: |
+        git status
+    - name: commit
+      run: |
+        git config --local user.email "leodidonato@gmail.com"
+        git config --local user.name "Leonardo Di Donato"
+        git commit -m "new: gen diagrams" -a
+    - name: push
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
