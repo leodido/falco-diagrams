@@ -19,6 +19,39 @@ I've already created some of them for my [talks](https://youtube.com/playlist?li
 
 **Disclaimer**: it's possible that you'll find some of these diagrams and illustrations (and many others) in the upcoming [Falco Cookbook](https://gum.co/falco). Grab it until it's hot!
 
+<table style="padding:10px">
+<tr>
+<td><img src="themed/0_falco_starts_sinsp_scap.png" alt="falco starts sinsp scap"/></td>
+<td><img src="themed/1_0_scap_open.png" alt="scap open"/></td>
+<td><img src="themed/1_1_scap_open_internals.png" alt="scap open internals"/></td>
+</tr>
+<tr>
+<td><img src="themed/1_2_scap_open_live_int.png" alt="scap open live int"/></td>
+<td><img src="themed/2_0_scap_bpf_load_initial_setup.png" alt="scap bpf load initial setup"/></td>
+<td><img src="themed/2_1_scap_bpf_load_probe_elf_loading.png" alt="scap bpf load probe elf loading"/></td>
+</tr>
+<tr>
+<td><img src="themed/2_2_scap_bpf_load_populate_routing_syscall_table.png" alt="scap bpf load populate routing syscall table"/></td>
+<td><img src="themed/2_3_scap_bpf_load_populate_event_table_and_fillers_table.png" alt="scap bpf load populate event table and fillers table"/></td>
+<td><img src="themed/2_4_scap_bpf_load_events_per_cpu.png" alt="scap bpf load events per cpu"/></td>
+</tr>
+<tr>
+<td><img src="themed/2_5_scap_bpf_load_settings.png" alt="scap bpf load settings"/></td>
+<td><img src="themed/3_0_falco_event_loop.png" alt="falco event loop"/></td>
+<td><img src="themed/3_1_falco_event_loop_with_queue.png" alt="falco event loop with queue"/></td>
+</tr>
+<tr>
+<td><img src="themed/4_0_falco_grpc_server_on.png" alt="falco grpc server on"/></td>
+<td><img src="themed/4_1_falco_grpc_server_spawning_threads.png" alt="falco grpc server spawning threads"/></td>
+<td><img src="themed/4_2_falco_grpc_server_thread_processing.png" alt="falco grpc server thread processing"/></td>
+</tr>
+<tr>
+<td><img src="themed/4_3_falco_grpc_server_bidirectional_handling.png" alt="falco grpc server bidirectional handling"/></td>
+<td><img src="themed/4_4_falco_grpc_server_stream_handling.png" alt="falco grpc server stream handling"/></td>
+<td><img src="themed/5_0_falco_poiana_bot_workflow.png" alt="falco poiana bot workflow"/></td>
+</tr>
+</table>
+
 ## Contribute a diagram
 
 It's simple!
