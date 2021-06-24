@@ -11,26 +11,18 @@
         <code id="language-mermaid">
 
             sequenceDiagram
-    autonumber
-    Note over scap_open(): case SCAP_MODE_LIVE
-    alt userspace
-        scap_open()->>scap_open_udig_int(): call
-        scap_open_udig_int()-->>scap_open(): scap_t
-    else
-        scap_open()->>scap_open_live_int(): call
-        scap_open_live_int()->>scap_open_live_int(): bpf_probe = getenv("FALCO_BPF_PROBE")
-        alt FALCO_BPF_PROBE set
-            Note over scap_open_live_int(): bpf = true
-            opt FALCO_BPF_PROBE empty
-            scap_open_live_int()->>scap_open_live_int(): bpf_probe = $HOME/.falco/falco-bpf.o
-            Note over scap_open_live_int(): fallback to standard path
-            end
-        else
-            Note over scap_open_live_int(): bpf = false
-        end
-        Note over scap_open_live_int(): ...
-    end
-    scap_open_live_int()-->>scap_open(): scap_t
+            autonumber
+            scap_bpf_load()->>set_runtime_params(): call
+            set_runtime_params()->>kernel: setrlimit(INFINITY)
+            kernel-->>set_runtime_params(): error status
+            set_runtime_params()->>kernel: /proc/sys/net/core/bpf_jit_enable = 1
+            kernel-->>set_runtime_params(): error status
+            set_runtime_params()->>kernel: /proc/sys/net/core/bpf_jit_harden = 0
+            kernel-->>set_runtime_params(): error status
+            set_runtime_params()->>kernel: /proc/sys/net/core/bpf_jit_kallsyms = 1
+            kernel-->>set_runtime_params(): error status
+            set_runtime_params()-->>scap_bpf_load(): error status
+            Note over scap_bpf_load(): ...
         </code>
     </pre>
 

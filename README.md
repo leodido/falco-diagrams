@@ -54,4 +54,4 @@ Notice that also the input file will be edited by the tooling by inserting into 
 
 ---
 
-[![Analytics](https://ga-beacon.appspot.com/UA-49657176-1/falco-diagrams)](https://github.com/igrigorik/ga-beacon)
+[![Analytics](https://ga-beacon.appspot.com/UA-49657176-1/falco-diagrams?flat)](https://github.com/igrigorik/ga-beacon)
