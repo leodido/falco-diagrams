@@ -9,28 +9,32 @@
     <button id="download">PNG</button>
     <pre>
         <code id="language-mermaid">
-    sequenceDiagram
-    autonumber
-    scap_bpf_load()->>populate_syscall_routing_table_map(): call
-    loop i := 0, i < SYSCALL_TABLE_SIZE, i++
-    populate_syscall_routing_table_map()->>syscall_table: g_syscall_code_routing_table[i]
-    syscall_table-->>populate_syscall_routing_table_map(): x = system-independent syscall code
-    populate_syscall_routing_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
-    Note right of populate_syscall_routing_table_map(): store x at the i-th position of the SYSDIG_SYSCALL_CODE_ROUTING_TABLE map
-    eBPF VM-->>populate_syscall_routing_table_map(): error status
-    end
-    populate_syscall_routing_table_map()-->>scap_bpf_load(): error status
-    scap_bpf_load()->>populate_syscall_table_map(): call
-    loop i := 0, i < SYSCALL_TABLE_SIZE, i++
-    populate_syscall_table_map()->>syscall_table: g_syscall_table[i]
-    Note right of syscall_table: eg., x = {UF_USED | UF_NEVER_DROP, PPME_SYSCALL_OPEN_E, PPME_SYSCALL_OPEN_X}
-    syscall_table-->>populate_syscall_table_map(): x = {syscall_flags values + ..., ppm_event_type value}
-    populate_syscall_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
-    Note left of populate_syscall_table_map(): store x at the i-th position of the SYSDIG_SYSCALL_TABLE map
-    eBPF VM-->>populate_syscall_table_map(): error status
-    end
-    populate_syscall_table_map()-->>scap_bpf_load(): error status
-    Note over scap_bpf_load(): ...
+
+            sequenceDiagram
+                autonumber
+                scap_bpf_load()->>populate_event_table_map(): call
+                loop i := 0, i < PPM_EVENT_MAX, i++
+                populate_event_table_map()->>event_table: g_event_info[i]
+                Note left of event_table: eg., x = {"rename", EC_FILE, EF_NONE, 3, {{"res", PT_ERRNO, PF_DEC}, {"oldpath", PT_FSPATH, PF_NA}, {"newpath", PT_FSPATH, PF_NA}}}
+                event_table-->>populate_event_table_map(): x = ppm_event_info{name, category, flags, num params, params descriptions}
+                populate_event_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
+                Note right of populate_event_table_map(): store x at the i-th position of SYSDIG_EVENT_INFO_TABLE map
+                eBPF VM-->>populate_event_table_map(): error status
+                end
+                populate_event_table_map()-->>scap_bpf_load(): error status
+                scap_bpf_load()->>populate_fillers_table_map(): call
+                loop i := 0, i < PPM_EVENT_MAX, i++
+                populate_fillers_table_map()->>fillers_table: g_ppm_events[i]
+                Note left of fillers_table: eg., x = {FILLER_REF(sys_open_x)},
+                fillers_table-->>populate_fillers_table_map(): x = ppm_event_entry{filler callback, ...}
+                populate_fillers_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
+                Note left of populate_fillers_table_map(): store x at the i-th position of the SYSDIG_FILLERS_TABLE map
+                eBPF VM-->>populate_fillers_table_map(): error status
+                end
+                populate_fillers_table_map()->>populate_fillers_table_map(): check no filler is missing
+                populate_fillers_table_map()-->>scap_bpf_load(): error status
+                Note over scap_bpf_load(): ...
+
         </code>
     </pre>
 

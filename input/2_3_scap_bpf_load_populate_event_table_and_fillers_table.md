@@ -1,0 +1,31 @@
+```mermaid
+sequenceDiagram
+    scap_bpf_load()->>populate_event_table_map(): call
+    loop i := 0, i < PPM_EVENT_MAX, i++
+    populate_event_table_map()->>event_table: g_event_info[i]
+    Note left of event_table: eg., x = {"rename", EC_FILE, EF_NONE, 3, {{"res", PT_ERRNO, PF_DEC}, {"oldpath", PT_FSPATH, PF_NA}, {"newpath", PT_FSPATH, PF_NA}}}
+    event_table-->>populate_event_table_map(): x = ppm_event_info{name, category, flags, num params, params descriptions}
+    populate_event_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
+    Note right of populate_event_table_map(): store x at the i-th position of SYSDIG_EVENT_INFO_TABLE map
+    eBPF VM-->>populate_event_table_map(): error status
+    end
+    populate_event_table_map()-->>scap_bpf_load(): error status
+    scap_bpf_load()->>populate_fillers_table_map(): call
+    loop i := 0, i < PPM_EVENT_MAX, i++
+    populate_fillers_table_map()->>fillers_table: g_ppm_events[i]
+    Note left of fillers_table: eg., x = {FILLER_REF(sys_open_x)},
+    fillers_table-->>populate_fillers_table_map(): x = ppm_event_entry{filler callback, ...}
+    populate_fillers_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
+    Note left of populate_fillers_table_map(): store x at the i-th position of the SYSDIG_FILLERS_TABLE map
+    eBPF VM-->>populate_fillers_table_map(): error status
+    end
+    populate_fillers_table_map()->>populate_fillers_table_map(): check no filler is missing
+    populate_fillers_table_map()-->>scap_bpf_load(): error status
+    Note over scap_bpf_load(): ...
+```
+
+TODO:
+
+- What eBPF map types are SYSDIG_EVENT_INFO_TABLE and SYSDIG_FILLERS_TABLE?
+- Show ppm_event_info (and nested types) example
+- SHow ppm_event_entry (and nested types) example
