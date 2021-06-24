@@ -11,25 +11,28 @@
         <code id="language-mermaid">
 
             sequenceDiagram
-            autonumber
-            loop always
-            falco->>libsinsp: next(&ev)
-            libsinsp->>libsinsp: pop container events, if any
-            libsinsp->>libscap: scap_next()
-            libscap-->>libsinsp: event + error status
-            libsinsp->>libsinsp: update_k8s_state()
-            libsinsp-->>falco: error status
-
-            Note right of falco: As the inspector has no filter at its level, all events are returned
-            Note right of falco: The Falco engine will match the current event against the current set of rules
-            falco->>falco_engine: process_sinsp_event(ev)
-            falco_engine-->>falco: rule_result "res"
-
-            opt res
-            Note right of falco: When a match is found, pass the event to the Falco outputs
-            falco->>falco_outputs: handle_event(res)
+            alt state == request_context_base/REQUEST
+            request_bidi_context{outputs}/process(...)->>bidi_context: bidi_ctx = new(srv_ctx)
+            request_bidi_context{outputs}/process(...)->>request_bidi_context{outputs}/process(...): state = request_context_base/WRITE
+            request_bidi_context{outputs}/process(...)->>grpc/ServerAsyncReaderWriter{outputs}: reader_writer->Read(req, this)
+            else state == request_context_base/WRITE
+            request_bidi_context{outputs}/process(...)->>request_bidi_context{outputs}/process(...): create response res
+            request_bidi_context{outputs}/process(...)->>server_impl: process_func(bidi_ctx, req, res)
+            server_impl->>server_impl: sub(bidi_ctx, req, res)
+            opt bidi_ctx not running
+            request_bidi_context{outputs}/process(...)->>request_bidi_context{outputs}/process(...): state = request_context_base/FINISH
+            request_bidi_context{outputs}/process(...)->>grpc/ServerAsyncReaderWriter{outputs}: reader_writer->Finish(grpc/Status/Ok, this)
+            Note over request_bidi_context{outputs}/process(...): return
             end
+            opt bidi_ctx has more
+            Note over request_bidi_context{outputs}/process(...): current context has still more responses to stream
+            request_bidi_context{outputs}/process(...)->>grpc/ServerAsyncReaderWriter{outputs}: reader_writer->Write(res, this)
+            Note over request_bidi_context{outputs}/process(...): return
             end
+            Note over request_bidi_context{outputs}/process(...): no other responses to stream, but ready to write
+            request_bidi_context{outputs}/process(...)->>grpc/ServerAsyncReaderWriter{outputs}: reader_writer->Read(req, this)
+            end
+
         </code>
     </pre>
 
