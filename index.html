@@ -9,20 +9,28 @@
     <button id="download">PNG</button>
     <pre>
         <code id="language-mermaid">
-
-            sequenceDiagram
-            autonumber
-            scap_bpf_load()->>set_runtime_params(): call
-            set_runtime_params()->>kernel: setrlimit(INFINITY)
-            kernel-->>set_runtime_params(): error status
-            set_runtime_params()->>kernel: /proc/sys/net/core/bpf_jit_enable = 1
-            kernel-->>set_runtime_params(): error status
-            set_runtime_params()->>kernel: /proc/sys/net/core/bpf_jit_harden = 0
-            kernel-->>set_runtime_params(): error status
-            set_runtime_params()->>kernel: /proc/sys/net/core/bpf_jit_kallsyms = 1
-            kernel-->>set_runtime_params(): error status
-            set_runtime_params()-->>scap_bpf_load(): error status
-            Note over scap_bpf_load(): ...
+    sequenceDiagram
+    autonumber
+    scap_bpf_load()->>populate_syscall_routing_table_map(): call
+    loop i := 0, i < SYSCALL_TABLE_SIZE, i++
+    populate_syscall_routing_table_map()->>syscall_table: g_syscall_code_routing_table[i]
+    syscall_table-->>populate_syscall_routing_table_map(): x = system-independent syscall code
+    populate_syscall_routing_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
+    Note right of populate_syscall_routing_table_map(): store x at the i-th position of the SYSDIG_SYSCALL_CODE_ROUTING_TABLE map
+    eBPF VM-->>populate_syscall_routing_table_map(): error status
+    end
+    populate_syscall_routing_table_map()-->>scap_bpf_load(): error status
+    scap_bpf_load()->>populate_syscall_table_map(): call
+    loop i := 0, i < SYSCALL_TABLE_SIZE, i++
+    populate_syscall_table_map()->>syscall_table: g_syscall_table[i]
+    Note right of syscall_table: eg., x = {UF_USED | UF_NEVER_DROP, PPME_SYSCALL_OPEN_E, PPME_SYSCALL_OPEN_X}
+    syscall_table-->>populate_syscall_table_map(): x = {syscall_flags values + ..., ppm_event_type value}
+    populate_syscall_table_map()->>eBPF VM: sys_bpf(BPF_MAP_UPDATE_ELEM, ...)
+    Note left of populate_syscall_table_map(): store x at the i-th position of the SYSDIG_SYSCALL_TABLE map
+    eBPF VM-->>populate_syscall_table_map(): error status
+    end
+    populate_syscall_table_map()-->>scap_bpf_load(): error status
+    Note over scap_bpf_load(): ...
         </code>
     </pre>
 
