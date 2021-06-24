@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+print_item() {
+    y=${1%.*} # strip extension
+    x=${y##*/} # strip directory
+    z=${x//_/ } # subst underscores with whitespaces
+    w=${z//[[:digit:]]/} # strip numbers
+    a=$(echo "$w" | xargs) # trim whitespaces
+    echo "<td><img src=\"$1\" alt=\"$a\"/></td>"
+}
+
+files=(themed/*.png)
+total=${#files[@]}
+i=0
+
+if [ "$total" -gt "0" ]; then
+    echo "<table style=\"padding:10px\">"
+    for f in "${files[@]}"; do
+        rest=$(( i % 3 ))
+        if [ "$rest" -eq "0" ]; then
+          if [ ! "$i" -eq "0" ]; then
+            echo "</tr>"
+          fi
+          echo "<tr>"
+          print_item "$f"
+        else
+            print_item "$f"
+            if [ "$((i + 1))" -eq "$total" ]; then
+            echo "</tr>"
+            fi
+        fi
+        i=$(( i + 1 ))
+    done
+    echo "</table>"
+fi
