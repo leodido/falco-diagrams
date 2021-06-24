@@ -17,6 +17,8 @@ But since I didn't like so much the quality of the resulting diagram images, I c
 
 I've already created some of them for my [talks](https://youtube.com/playlist?list=PL-YnLgW35W60wX9lhu6-a8ln4I9yfT1ug) and [decks](https://github.com/leodido/presentations) in the past, so you can find them in the [`themed/`](./themed) directory. Enjoy them!
 
+**Disclaimer**: it's possible that you'll find some of these diagrams and illustrations (and many others) in the upcoming [Falco Cookbook](https://gum.co/falco). Grab it until it's hot!
+
 ## Contribute a diagram
 
 It's simple!
