@@ -77,4 +77,6 @@ sequenceDiagram
     Note over scap_bpf_load(): ...
 ```
 
-TODO: sysdig_map_types
+TODO:
+
+- sysdig_map_types
